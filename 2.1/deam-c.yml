@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vol-deamonset
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: multitool
+        image: wbitt/network-multitool
+        env:
+        - name: HTTP_PORT
+          value: "80"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: slog
+          mountPath: /log/syslog
+      volumes:
+      - name: slog
+        hostPath: 
+          path: /var/log/syslog

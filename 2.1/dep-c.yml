@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vol-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: writetool
+        image: busybox:latest
+        command: ['sh', '-c', 'while true; do echo test! >> /write/hello.txt; sleep 5; done']
+        volumeMounts:
+        - name: shared-vol
+          mountPath: /write
+      - name: multitool
+        image: wbitt/network-multitool
+        command: ['sh', '-c', 'tail -f /read/hello.txt']
+        env:
+        - name: HTTP_PORT
+          value: "80"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: shared-vol
+          mountPath: /read
+      volumes:
+      - name: shared-vol
+        emptyDir: {}
