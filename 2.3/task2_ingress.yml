@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Перенаправлять HTTP на HTTPS
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - my-site.ru
+    secretName: my-tls-secret
+  rules:
+  - host: my-site.ru
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-svc
+            port:
+              number: 80
